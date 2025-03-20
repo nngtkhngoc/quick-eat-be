@@ -1,0 +1,165 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// --------------------------
+
+// USER
+model users {
+    id           String @id @default(cuid())
+    username     String @unique
+    fullname     String
+    phone_number String @unique
+    email        String @unique
+    password     String
+    profile_pic  String
+
+    reviews reviews[]
+    orders  orders[]
+    carts   carts?
+}
+
+model vouchers {
+    id       String   @id @default(cuid())
+    discount Decimal
+    expiry   DateTime
+    quantity Int
+    orders   orders[]
+}
+
+model carts {
+    id String @id @default(cuid())
+
+    user_id String @unique
+    user    users  @relation(fields: [user_id], references: [id])
+
+    cart_details cart_details[]
+}
+
+model cart_details {
+    id String @id @default(cuid())
+
+    cart_id String
+    cart    carts  @relation(fields: [cart_id], references: [id])
+
+    food_id String
+    food    food   @relation(fields: [food_id], references: [id])
+
+    quantity Int
+}
+
+model orders {
+    id           String          @id @default(cuid())
+    ship_charge  Decimal
+    total_price  Decimal // Total = (sum order_details) - discount + ship_charge
+    phone_number String
+    address      String
+    payment      Payment_Options
+
+    user_id String
+    user    users  @relation(fields: [user_id], references: [id])
+
+    voucher_id String?
+    voucher    vouchers? @relation(fields: [voucher_id], references: [id])
+
+    order_details order_details[]
+}
+
+model order_details {
+    order    orders @relation(fields: [order_id], references: [id])
+    order_id String
+
+    food    food   @relation(fields: [food_id], references: [id])
+    food_id String
+
+    quantity    Int
+    total_price Decimal
+
+    @@id([order_id, food_id])
+}
+
+enum Payment_Options {
+    COD
+    Bank
+}
+
+// FOOD
+model food {
+    id          String   @id @default(cuid())
+    name        String
+    price       Decimal
+    availablity Status
+    description String
+    image       String[]
+    avg_rate    Decimal?
+
+    food_catgories food_catgories[]
+    food_tags      food_tags[]
+    reviews        reviews[]
+
+    brand         brands          @relation(fields: [brand_id], references: [id])
+    brand_id      String
+    order_details order_details[]
+    cart_details  cart_details[]
+}
+
+enum Status {
+    IN_STOCK
+    OUT_OF_STOCK
+}
+
+model categories {
+    id             String           @id @default(cuid())
+    name           String
+    food_catgories food_catgories[]
+}
+
+model brands {
+    id   String @id @default(cuid())
+    name String
+    food food[]
+}
+
+model tags {
+    id        String      @id @default(cuid())
+    name      String
+    food_tags food_tags[]
+}
+
+model food_catgories {
+    food_id     String
+    category_id String
+
+    food     food       @relation(fields: [food_id], references: [id])
+    category categories @relation(fields: [category_id], references: [id])
+
+    @@id([food_id, category_id])
+}
+
+model food_tags {
+    tag_id  String
+    food_id String
+
+    food food @relation(fields: [food_id], references: [id])
+    tag  tags @relation(fields: [tag_id], references: [id])
+
+    @@id([tag_id, food_id])
+}
+
+model reviews {
+    id      String @id @default(cuid())
+    score   Int //From 1 - 5
+    content String
+
+    food_id String
+    food    food   @relation(fields: [food_id], references: [id])
+
+    user_id String
+    user    users  @relation(fields: [user_id], references: [id])
+}
