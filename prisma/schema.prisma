@@ -12,13 +12,14 @@ datasource db {
 
 // USER
 model users {
-    id           String @id @default(cuid())
-    username     String @unique
+    id           String   @id @default(cuid())
+    username     String   @unique
     fullname     String
-    phone_number String @unique
-    email        String @unique
+    phone_number String   @unique
+    email        String   @unique
     password     String
     profile_pic  String
+    createdAt    DateTime @default(now())
 
     reviews reviews[]
     orders  orders[]
@@ -153,9 +154,10 @@ model food_tags {
 }
 
 model reviews {
-    id      String @id @default(cuid())
-    score   Int //From 1 - 5
-    content String
+    id         String   @id @default(cuid())
+    score      Int //From 1 - 5
+    content    String?
+    created_at DateTime @default(now())
 
     food_id String
     food    food   @relation(fields: [food_id], references: [id])
