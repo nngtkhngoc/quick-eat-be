@@ -21,11 +21,25 @@ export const getAllFood = async (req, res) => {
 
     let whereCondition = {};
     if (filter_value) {
+      const filterValues = filter_value.split(",").map((val) => val.trim());
+
       whereCondition = {
-        OR: [
-          { name: { contains: filter_value, mode: "insensitive" } },
-          { brand: { name: { contains: filter_value, mode: "insensitive" } } }, // Sửa đúng kiểu relation
-        ],
+        OR: filterValues.flatMap((value) => [
+          { name: { contains: value, mode: "insensitive" } },
+          { brand: { name: { contains: value, mode: "insensitive" } } },
+          {
+            food_tags: {
+              some: { tag: { name: { contains: value, mode: "insensitive" } } },
+            },
+          },
+          {
+            food_categories: {
+              some: {
+                category: { name: { contains: value, mode: "insensitive" } },
+              },
+            },
+          },
+        ]),
       };
     }
 
@@ -42,7 +56,7 @@ export const getAllFood = async (req, res) => {
         brand: true,
         reviews: { include: { user: true } },
         food_tags: { select: { tag: true } },
-        food_catgories: { select: { category: true } },
+        food_categories: { select: { category: true } },
       },
     });
 
@@ -62,7 +76,7 @@ export const getFood = async (req, res) => {
         brand: true,
         reviews: { include: { user: true } },
         food_tags: { select: { tag: true } },
-        food_catgories: { select: { category: { select: { name: true } } } },
+        food_categories: { select: { category: { select: { name: true } } } },
       },
     });
 

@@ -100,9 +100,9 @@ model food {
     image       String[]
     avg_rate    Decimal?
 
-    food_catgories food_catgories[]
-    food_tags      food_tags[]
-    reviews        reviews[]
+    food_categories food_categories[]
+    food_tags       food_tags[]
+    reviews         reviews[]
 
     brand         brands          @relation(fields: [brand_id], references: [id])
     brand_id      String
@@ -116,9 +116,9 @@ enum Status {
 }
 
 model categories {
-    id             String           @id @default(cuid())
-    name           String
-    food_catgories food_catgories[]
+    id              String            @id @default(cuid())
+    name            String
+    food_categories food_categories[]
 }
 
 model brands {
@@ -133,7 +133,7 @@ model tags {
     food_tags food_tags[]
 }
 
-model food_catgories {
+model food_categories {
     food_id     String
     category_id String
 
