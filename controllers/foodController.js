@@ -40,7 +40,7 @@ export const getAllFood = async (req, res) => {
       orderBy: orderByCondition,
       include: {
         brand: true,
-        reviews: true,
+        reviews: { include: { user: true } },
         food_tags: { select: { tag: true } },
         food_catgories: { select: { category: true } },
       },
@@ -60,7 +60,7 @@ export const getFood = async (req, res) => {
       where: { id },
       include: {
         brand: true,
-        reviews: true,
+        reviews: { include: { user: true } },
         food_tags: { select: { tag: true } },
         food_catgories: { select: { category: { select: { name: true } } } },
       },
