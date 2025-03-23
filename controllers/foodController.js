@@ -4,7 +4,7 @@ export const getAllFood = async (req, res) => {
   let { limit, page, sort = "price", order = "desc", filter_value } = req.query;
 
   try {
-    if (!["name", "price", "avg_rate"].includes(sort)) {
+    if (!["name", "price", "avg_rate", "created_at"].includes(sort)) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid sort field" });

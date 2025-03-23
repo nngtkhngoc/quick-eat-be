@@ -99,6 +99,7 @@ model food {
     description String
     image       String[]
     avg_rate    Decimal?
+    created_at  DateTime @default(now())
 
     food_categories food_categories[]
     food_tags       food_tags[]
