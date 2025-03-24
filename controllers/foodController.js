@@ -1,7 +1,17 @@
 import { prisma } from "../config/db.js";
 
 export const getAllFood = async (req, res) => {
-  let { limit, page, sort = "price", order = "desc", filter_value } = req.query;
+  let {
+    limit,
+    page,
+    sort = "price",
+    order = "desc",
+    tag,
+    brand,
+    category,
+    minPrice,
+    maxPrice,
+  } = req.query;
 
   try {
     if (!["name", "price", "avg_rate", "created_at"].includes(sort)) {
@@ -20,32 +30,38 @@ export const getAllFood = async (req, res) => {
     const currentPage = parseInt(page) || 1;
 
     let whereCondition = {};
-    if (filter_value) {
-      const filterValues = filter_value.split(",").map((val) => val.trim());
 
-      whereCondition = {
-        OR: filterValues.flatMap((value) => [
-          { name: { contains: value, mode: "insensitive" } },
-          { brand: { name: { contains: value, mode: "insensitive" } } },
-          {
-            food_tags: {
-              some: { tag: { name: { contains: value, mode: "insensitive" } } },
-            },
-          },
-          {
-            food_categories: {
-              some: {
-                category: { name: { contains: value, mode: "insensitive" } },
-              },
-            },
-          },
-        ]),
+    if (brand) {
+      const brandList = brand.split(",").map((b) => b.trim());
+      whereCondition.brand = { name: { in: brandList, mode: "insensitive" } };
+    }
+
+    if (category) {
+      const categoryList = category.split(",").map((c) => c.trim());
+      whereCondition.food_categories = {
+        some: { category: { name: { in: categoryList, mode: "insensitive" } } },
       };
     }
 
-    let orderByCondition;
+    if (tag) {
+      const tagList = tag.split(",").map((t) => t.trim());
+      whereCondition.food_tags = {
+        some: { tag: { name: { in: tagList, mode: "insensitive" } } },
+      };
+    }
 
-    orderByCondition = { [sort]: order };
+    if (minPrice !== undefined) {
+      whereCondition.price = { gte: parseFloat(minPrice) };
+    }
+
+    if (maxPrice !== undefined) {
+      whereCondition.price = {
+        ...(whereCondition.price || {}),
+        lte: parseFloat(maxPrice),
+      };
+    }
+
+    let orderByCondition = { [sort]: order };
 
     const food = await prisma.food.findMany({
       where: whereCondition,
