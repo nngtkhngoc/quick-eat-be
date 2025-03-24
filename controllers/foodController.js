@@ -9,6 +9,7 @@ export const getAllFood = async (req, res) => {
     tag,
     brand,
     category,
+    availability,
     minPrice,
     maxPrice,
   } = req.query;
@@ -50,6 +51,12 @@ export const getAllFood = async (req, res) => {
       };
     }
 
+    if (availability) {
+      whereCondition.availablity = {
+        in: availability.split(",").map((a) => a.trim()),
+      };
+    }
+
     if (minPrice !== undefined) {
       whereCondition.price = { gte: parseFloat(minPrice) };
     }
@@ -60,6 +67,8 @@ export const getAllFood = async (req, res) => {
         lte: parseFloat(maxPrice),
       };
     }
+
+    console.log(whereCondition);
 
     let orderByCondition = { [sort]: order };
 
