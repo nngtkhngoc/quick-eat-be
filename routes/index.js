@@ -3,6 +3,7 @@ import reviewRouter from "./reviewRouter.js";
 import categoryRouter from "./categoryRouter.js";
 import brandRouter from "./brandRouter.js";
 import tagRouter from "./tagRouter.js";
+import cookRouter from "./cookRouter.js";
 
 export const routes = (app) => {
   app.use("/api/food", foodRouter);
@@ -10,4 +11,5 @@ export const routes = (app) => {
   app.use("/api/categories", categoryRouter);
   app.use("/api/tags", tagRouter);
   app.use("/api/brands", brandRouter);
+  app.use("/api/cook", cookRouter);
 };

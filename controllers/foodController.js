@@ -68,8 +68,6 @@ export const getAllFood = async (req, res) => {
       };
     }
 
-    console.log(whereCondition);
-
     let orderByCondition = { [sort]: order };
 
     const food = await prisma.food.findMany({

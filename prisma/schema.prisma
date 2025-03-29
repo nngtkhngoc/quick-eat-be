@@ -166,3 +166,19 @@ model reviews {
     user_id String
     user    users  @relation(fields: [user_id], references: [id])
 }
+
+// COOK
+model cook {
+    id          String @id @default(cuid())
+    profile_img String
+    name        String
+    level       Levels
+    description String
+}
+
+enum Levels {
+    Intern
+    Fresher
+    Junior
+    Senior
+}
