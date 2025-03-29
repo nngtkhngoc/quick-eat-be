@@ -83,7 +83,9 @@ export const getAllFood = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ success: true, data: food });
+    const total = await prisma.food.count({ where: whereCondition });
+
+    return res.status(200).json({ success: true, data: food, total: total });
   } catch (error) {
     console.log("Error get all food:", error);
     return res.status(500).json({ message: "Internal Server Error" });
