@@ -1,10 +1,28 @@
 import { prisma } from "../config/db.js";
 import { signUpValidator } from "../validation/userValidation.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const getAllUsers = async (req, res) => {};
 
-export const getUser = async (req, res) => {};
+export const getUser = async (req, res) => {
+  const { id } = req;
+
+  try {
+    const user = await prisma.users.findUnique({ where: { id } });
+
+    if (user) {
+      return res.status(200).json({ success: true, data: user });
+    }
+
+    return res.status(404).json({ success: false, message: "User not found" });
+  } catch (error) {
+    console.log("Error getting user: ", error, "req: ", req);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 export const signUp = async (req, res) => {
   const data = req.body;
@@ -48,7 +66,12 @@ export const signUp = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ success: true, data: newUser });
+    const token = jwt.sign({ id: newUser.id }, process.env.TOKEN_SECRET, {
+      expiresIn: 60 * 60 * 24,
+    });
+
+    res.header("auth_token", token);
+    return res.status(200).json({ success: true, token, data: newUser });
   } catch (error) {
     if (error.isJoi) {
       return res.status(400).json({
