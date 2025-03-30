@@ -84,7 +84,52 @@ export const signUp = async (req, res) => {
   }
 };
 
-export const signIn = async (req, res) => {};
+export const signIn = async (req, res) => {
+  const { identifier, password } = req.body;
+  try {
+    if (!identifier || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide identifier and password",
+      });
+    }
+
+    const user = await prisma.users.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { phone_number: identifier },
+          { username: identifier },
+        ],
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(406)
+        .json({ success: false, message: "Incorrect password" });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
+      expiresIn: 60 * 60 * 24,
+    });
+
+    res.header("auth_token", token);
+    return res.status(200).json({ success: true, token, data: user });
+  } catch (error) {
+    console.log("Error sign in:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 export const updateUser = async (req, res) => {};
 
