@@ -17,7 +17,7 @@ export const getUser = async (req, res) => {
 
     return res.status(404).json({ success: false, message: "User not found" });
   } catch (error) {
-    console.log("Error getting user: ", error, "req: ", req);
+    console.log("Error getting user: ", error, "req: ", req.id);
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });
