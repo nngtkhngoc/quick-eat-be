@@ -158,6 +158,9 @@ export const addReview = async (req, res) => {
         score,
         content,
       },
+      include: {
+        user: true,
+      },
     });
 
     return res.status(200).json({ success: true, data: newReview });
