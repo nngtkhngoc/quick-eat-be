@@ -47,6 +47,7 @@ model carts {
     user    users  @relation(fields: [user_id], references: [id])
 
     total_quantity Int @default(0)
+    total_price    Int @default(0)
 
     cart_details cart_details[]
 }
@@ -58,7 +59,8 @@ model cart_details {
     food_id String
     food    food   @relation(fields: [food_id], references: [id])
 
-    quantity Int
+    quantity    Int
+    total_price Int @default(0)
 
     @@id([cart_id, food_id])
 }

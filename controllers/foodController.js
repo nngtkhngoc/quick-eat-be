@@ -198,14 +198,20 @@ export const addToCart = async (req, res) => {
       where: { cart_id_food_id: { food_id, cart_id: cart.id } },
     });
 
+    const food = await prisma.food.findUnique({ where: { id: food_id } });
+    const price = quantity * food.price;
+
     if (!cart_details) {
       cart_details = await prisma.cart_details.create({
-        data: { cart_id: cart.id, food_id, quantity },
+        data: { cart_id: cart.id, food_id, quantity, total_price: price },
       });
     } else {
       cart_details = await prisma.cart_details.update({
         where: { cart_id_food_id: { food_id, cart_id: cart.id } },
-        data: { quantity: cart_details.quantity + quantity },
+        data: {
+          quantity: cart_details.quantity + quantity,
+          total_price: cart_details.total_price + price,
+        },
       });
     }
 
@@ -214,9 +220,17 @@ export const addToCart = async (req, res) => {
       where: { cart_id: cart.id },
     });
 
+    const totalPrice = await prisma.cart_details.aggregate({
+      _sum: { total_price: true },
+      where: { cart_id: cart.id },
+    });
+
     cart = await prisma.carts.update({
       where: { id: cart.id },
-      data: { total_quantity: totalQuantity._sum.quantity || 0 },
+      data: {
+        total_quantity: totalQuantity._sum.quantity,
+        total_price: totalPrice._sum.total_price,
+      },
       include: { cart_details: { include: { food: true } } },
     });
     return res.status(200).json({ success: true, data: cart });
