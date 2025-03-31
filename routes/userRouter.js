@@ -1,7 +1,6 @@
 import express from "express";
 import {
   getAllUsers,
-  getCart,
   getUser,
   signIn,
   signUp,
@@ -16,7 +15,5 @@ router.get("/me", verifyToken, getUser);
 router.post("/signup", signUp);
 router.post("/signin", signIn);
 router.put("/", updateUser);
-
-router.get("/cart", verifyToken, getCart);
 
 export default router;

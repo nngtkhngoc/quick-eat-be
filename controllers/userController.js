@@ -136,20 +136,3 @@ export const signIn = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {};
-
-export const getCart = async (req, res) => {
-  const { id } = req;
-  try {
-    const cart = await prisma.carts.findUnique({
-      where: { user_id: id },
-      include: { cart_details: { include: { food: true } } },
-    });
-
-    return res.status(200).json({ success: true, data: cart });
-  } catch (error) {
-    console.log("Error get cart: ", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
-  }
-};
