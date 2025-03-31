@@ -8,7 +8,6 @@ const verifyToken = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    console.log(verified);
     req.id = verified.id;
     next();
   } catch (err) {

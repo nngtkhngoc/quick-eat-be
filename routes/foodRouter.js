@@ -6,6 +6,7 @@ import {
   deleteFood,
   getReviews,
   addReview,
+  addToCart,
 } from "../controllers/foodController.js";
 
 import express from "express";
@@ -22,4 +23,5 @@ router.post("/:id", deleteFood);
 router.get("/:id/reviews", getReviews);
 router.post("/:id/reviews", verifyToken, addReview);
 
+router.post("/:id/cart", verifyToken, addToCart);
 export default router;
