@@ -5,6 +5,7 @@ import tagRouter from "./tagRouter.js";
 import cookRouter from "./cookRouter.js";
 import userRouter from "./userRouter.js";
 import cartRouter from "./cartRouter.js";
+import oAuthRouter from "./oAuthRouter.js";
 
 export const routes = (app) => {
   app.use("/api/food", foodRouter);
@@ -14,4 +15,5 @@ export const routes = (app) => {
   app.use("/api/cook", cookRouter);
   app.use("/api/users", userRouter);
   app.use("/api/cart", cartRouter);
+  app.use("/api/oauth", oAuthRouter);
 };

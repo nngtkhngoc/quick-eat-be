@@ -15,7 +15,7 @@ model users {
     id           String   @id @default(cuid())
     username     String   @unique
     fullname     String?
-    phone_number String   @unique
+    phone_number String?  @unique
     email        String   @unique
     password     String
     profile_pic  String?
@@ -50,6 +50,9 @@ model carts {
     total_price    Int @default(0)
 
     cart_details cart_details[]
+
+    order_id String? @unique
+    orders   orders?
 }
 
 model cart_details {
@@ -68,7 +71,6 @@ model cart_details {
 model orders {
     id           String          @id @default(cuid())
     ship_charge  Decimal
-    total_price  Decimal // Total = (sum order_details) - discount + ship_charge
     phone_number String
     address      String
     payment      Payment_Options
@@ -79,20 +81,8 @@ model orders {
     voucher_id String?
     voucher    vouchers? @relation(fields: [voucher_id], references: [id])
 
-    order_details order_details[]
-}
-
-model order_details {
-    order    orders @relation(fields: [order_id], references: [id])
-    order_id String
-
-    food    food   @relation(fields: [food_id], references: [id])
-    food_id String
-
-    quantity    Int
-    total_price Decimal
-
-    @@id([order_id, food_id])
+    cart_id String @unique
+    carts   carts  @relation(fields: [cart_id], references: [id], onDelete: Cascade)
 }
 
 enum Payment_Options {
@@ -115,10 +105,9 @@ model food {
     food_tags       food_tags[]
     reviews         reviews[]
 
-    brand         brands          @relation(fields: [brand_id], references: [id])
-    brand_id      String
-    order_details order_details[]
-    cart_details  cart_details[]
+    brand        brands         @relation(fields: [brand_id], references: [id])
+    brand_id     String
+    cart_details cart_details[]
 }
 
 enum Status {

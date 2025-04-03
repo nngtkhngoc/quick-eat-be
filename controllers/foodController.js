@@ -173,7 +173,17 @@ export const addReview = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ success: true, data: newReview });
+    const avg_score = await prisma.reviews.aggregate({
+      where: { food_id },
+      _avg: { score: true },
+    });
+
+    const food = await prisma.food.update({
+      where: { id: food_id },
+      data: { avg_rate: avg_score._avg.score },
+    });
+
+    return res.status(200).json({ success: true, data: newReview, food: food });
   } catch (error) {
     console.log("Error adding review ", error, "id:", req.id);
 

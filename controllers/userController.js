@@ -83,7 +83,7 @@ export const signUp = async (req, res) => {
       });
     }
     console.log("Error signing up: ", error);
-    return res.status(500).json({ error });
+    return res.status(500).json({ success: false, message: error });
   }
 };
 
@@ -136,3 +136,7 @@ export const signIn = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {};
+
+export const signUpGoogle = async (req, res) => {
+  const body = {};
+};

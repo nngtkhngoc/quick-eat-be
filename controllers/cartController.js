@@ -85,24 +85,37 @@ export const removeFromCart = async (req, res) => {
       where: { cart_id_food_id: { cart_id, food_id } },
     });
 
-    let cart = await prisma.carts.findUnique({ where: { user_id: id } });
-
-    const totalQuantity = await prisma.cart_details.aggregate({
-      _sum: { quantity: true },
-      where: { cart_id: cart.id },
+    const checkCart = await prisma.cart_details.findMany({
+      where: { cart_id },
     });
 
-    const totalPrice = await prisma.cart_details.aggregate({
-      _sum: { total_price: true },
-      where: { cart_id: cart.id },
-    });
+    console.log(checkCart);
 
-    cart = await prisma.carts.update({
-      where: { id: cart.id },
-      data: {
-        total_quantity: totalQuantity._sum.quantity,
-        total_price: totalPrice._sum.total_price,
-      },
+    if (checkCart.length == 0) {
+      await prisma.carts.delete({ where: { user_id: id } });
+    } else {
+      const totalQuantity = await prisma.cart_details.aggregate({
+        _sum: { quantity: true },
+        where: { cart_id },
+      });
+
+      const totalPrice = await prisma.cart_details.aggregate({
+        _sum: { total_price: true },
+        where: { cart_id },
+      });
+
+      await prisma.carts.update({
+        where: { user_id: id },
+        data: {
+          total_quantity: totalQuantity._sum.quantity,
+          total_price: totalPrice._sum.total_price,
+        },
+        include: { cart_details: { include: { food: true } } },
+      });
+    }
+
+    let cart = await prisma.carts.findUnique({
+      where: { user_id: id },
       include: { cart_details: { include: { food: true } } },
     });
 
@@ -123,36 +136,23 @@ export const updateCart = async (req, res) => {
   const { id } = req;
 
   try {
-    let updatedCartDetails = await prisma.cart_details.update({
-      where: { cart_id_food_id: { cart_id, food_id } },
-      data: { quantity },
-    });
-
     const food = await prisma.food.findUnique({ where: { id: food_id } });
     const price = quantity * food.price;
 
-    updatedCartDetails = await prisma.cart_details.update({
+    let updatedCartDetails = await prisma.cart_details.update({
       where: { cart_id_food_id: { cart_id, food_id } },
-      data: { total_price: price },
+      data: { quantity, total_price: price },
+    });
+    const totals = await prisma.cart_details.aggregate({
+      _sum: { quantity: true, total_price: true },
+      where: { cart_id },
     });
 
-    let cart = await prisma.carts.findUnique({ where: { user_id: id } });
-
-    const totalQuantity = await prisma.cart_details.aggregate({
-      _sum: { quantity: true },
-      where: { cart_id: cart.id },
-    });
-
-    const totalPrice = await prisma.cart_details.aggregate({
-      _sum: { total_price: true },
-      where: { cart_id: cart.id },
-    });
-
-    cart = await prisma.carts.update({
-      where: { id: cart.id },
+    let cart = await prisma.carts.update({
+      where: { user_id: id },
       data: {
-        total_quantity: totalQuantity._sum.quantity,
-        total_price: totalPrice._sum.total_price,
+        total_quantity: totals._sum.quantity,
+        total_price: totals._sum.total_price,
       },
       include: { cart_details: { include: { food: true } } },
     });
@@ -160,6 +160,7 @@ export const updateCart = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: cart,
+      updatedCartDetails,
     });
   } catch (error) {
     console.log("Error updating cart: ", error);
