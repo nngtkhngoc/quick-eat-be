@@ -23,7 +23,7 @@ model users {
     createdAt    DateTime @default(now())
 
     reviews reviews[]
-    orders  orders[]
+    orders  orders?
     carts   carts?
 }
 
@@ -52,12 +52,13 @@ model carts {
     cart_details cart_details[]
 
     order_id String? @unique
-    orders   orders?
+    orders   orders? @relation(fields: [ordersId], references: [id])
+    ordersId String?
 }
 
 model cart_details {
     cart_id String
-    cart    carts  @relation(fields: [cart_id], references: [id])
+    cart    carts  @relation(fields: [cart_id], references: [id], onDelete: Cascade)
 
     food_id String
     food    food   @relation(fields: [food_id], references: [id])
@@ -70,19 +71,40 @@ model cart_details {
 
 model orders {
     id           String          @id @default(cuid())
-    ship_charge  Decimal
+    ship_charge  Decimal         @default(30000)
     phone_number String
     address      String
-    payment      Payment_Options
+    payment      Payment_Options @default(COD)
+    total_price  Decimal
 
-    user_id String
+    user_id String @unique
     user    users  @relation(fields: [user_id], references: [id])
 
     voucher_id String?
     voucher    vouchers? @relation(fields: [voucher_id], references: [id])
 
-    cart_id String @unique
-    carts   carts  @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+    order_details order_details[]
+    carts         carts[]
+}
+
+model order_details {
+    id          String       @id @default(cuid())
+    quantity    Int
+    total_price Int
+    status      Order_Status @default(PENDING)
+
+    food_id String
+    food    food   @relation(fields: [food_id], references: [id])
+
+    order_id String
+    order    orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
+}
+
+enum Order_Status {
+    PENDING
+    CONFIRMED
+    DELIVERED
+    CANCELLED
 }
 
 enum Payment_Options {
@@ -105,9 +127,10 @@ model food {
     food_tags       food_tags[]
     reviews         reviews[]
 
-    brand        brands         @relation(fields: [brand_id], references: [id])
-    brand_id     String
-    cart_details cart_details[]
+    brand         brands          @relation(fields: [brand_id], references: [id])
+    brand_id      String
+    cart_details  cart_details[]
+    order_details order_details[]
 }
 
 enum Status {
