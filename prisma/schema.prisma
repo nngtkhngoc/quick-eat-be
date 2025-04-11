@@ -23,7 +23,7 @@ model users {
     createdAt    DateTime @default(now())
 
     reviews reviews[]
-    orders  orders?
+    orders  orders[]
     carts   carts?
 }
 
@@ -71,13 +71,14 @@ model cart_details {
 
 model orders {
     id           String          @id @default(cuid())
+    fullname     String          @default("")
     ship_charge  Decimal         @default(30000)
     phone_number String
     address      String
     payment      Payment_Options @default(COD)
     total_price  Decimal
 
-    user_id String @unique
+    user_id String
     user    users  @relation(fields: [user_id], references: [id])
 
     voucher_id String?
