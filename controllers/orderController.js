@@ -1,10 +1,13 @@
 import { prisma } from "../config/db.js";
+import { createOrderValidation } from "../validation/orderValidation.js";
 
 export const createOrder = async (req, res) => {
   const { id } = req;
   const { phone_number, address, payment, fullname } = req.body;
 
   try {
+    await createOrderValidation.validateAsync(req.body);
+
     const cart = await prisma.carts.findUnique({
       where: { user_id: id },
       include: { cart_details: true },
@@ -73,6 +76,13 @@ export const createOrder = async (req, res) => {
 
     return res.status(200).json({ success: true, data: order });
   } catch (error) {
+    if (error.isJoi) {
+      return res.status(400).json({
+        success: false,
+        message: error.details.map((err) => err.message),
+      });
+    }
+
     console.log("Error create order:", error);
     return res
       .status(500)

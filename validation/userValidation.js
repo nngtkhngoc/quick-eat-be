@@ -24,14 +24,14 @@ export const signUpValidator = Joi.object({
     }),
   phone_number: Joi.string()
     .pattern(/^[0-9\s]+$/)
-    .min(8)
+    .min(10)
     .max(12)
     .allow("")
     .messages({
       "any.required": "Phone number is required",
       "string.empty": "Phone number must not be empty",
       "string.pattern.base": "Phone number is unvalid",
-      "string.min": "Phone number must be at least 8 characters",
+      "string.min": "Phone number must be at least 10 characters",
       "string.max": "Phone number must not be over 12 characters",
     }),
   password: Joi.string()
