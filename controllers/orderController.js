@@ -2,7 +2,7 @@ import { prisma } from "../config/db.js";
 
 export const createOrder = async (req, res) => {
   const { id } = req;
-  const { phone_number, address, payment } = req.body;
+  const { phone_number, address, payment, fullname } = req.body;
 
   try {
     const cart = await prisma.carts.findUnique({
@@ -41,6 +41,7 @@ export const createOrder = async (req, res) => {
         phone_number,
         address,
         payment,
+        fullname,
         voucher_id: req.body.voucher_id || null,
         total_price: finalPrice,
         order_details: {
