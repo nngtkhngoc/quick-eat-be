@@ -13,7 +13,7 @@ export const createOrder = async (req, res) => {
     if (!cart || cart.cart_details.length === 0) {
       return res
         .status(400)
-        .json({ success: false, message: "Giỏ hàng trống hoặc không tồn tại" });
+        .json({ success: false, message: "Your cart is empty!" });
     }
 
     const totalPrice = cart.total_price;
@@ -28,7 +28,7 @@ export const createOrder = async (req, res) => {
       } else {
         return res
           .status(400)
-          .json({ success: false, message: "Voucher không hợp lệ" });
+          .json({ success: false, message: "Invalid voucher" });
       }
     }
 
@@ -76,6 +76,6 @@ export const createOrder = async (req, res) => {
     console.log("Error create order:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Đã có lỗi xảy ra khi tạo đơn hàng" });
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
