@@ -133,10 +133,12 @@ export const getOrder = async (req, res) => {
     });
 
     if (orders.length > 0) {
-      return res.status(200).json({ success: true, message: orders });
+      return res.status(200).json({ success: true, data: orders });
     }
 
-    return res.status(404).json({ success: false, data: "No order was found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "No order was found" });
   } catch (error) {
     console.log("Error getting order: ", error);
     return res
