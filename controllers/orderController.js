@@ -89,3 +89,25 @@ export const createOrder = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
+
+export const getOrder = async (req, res) => {
+  const { id } = req;
+
+  try {
+    const orders = await prisma.orders.findMany({
+      where: { user_id: id },
+      include: { order_details: true },
+    });
+
+    if (orders) {
+      return res.status(200).json({ success: true, message: orders });
+    }
+
+    return res.status(404).json({ success: false, data: "No order was found" });
+  } catch (error) {
+    console.log("Error getting order: ", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
