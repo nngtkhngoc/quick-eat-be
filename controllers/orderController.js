@@ -125,7 +125,9 @@ export const getOrder = async (req, res) => {
       include: {
         order_details: {
           include: {
-            food: true,
+            food: {
+              include: { food_categories: { select: { category: true } } },
+            },
           },
         },
       },
