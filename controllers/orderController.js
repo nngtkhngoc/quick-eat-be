@@ -97,19 +97,28 @@ export const getOrder = async (req, res) => {
   try {
     let whereCondition = {
       user_id: id,
+      order_details: {
+        some: {},
+      },
     };
 
-    if (status) {
-      whereCondition.order_details = {
-        some: {
-          status: status,
+    if (status && !food_name) {
+      whereCondition.order_details.some.status = status;
+    }
+
+    if (!status && food_name) {
+      whereCondition.order_details.some.food = {
+        name: {
+          contains: food_name,
+          mode: "insensitive",
         },
       };
     }
 
-    if (food_name) {
+    if (status && food_name) {
       whereCondition.order_details = {
         some: {
+          status: status,
           food: {
             name: {
               contains: food_name,
