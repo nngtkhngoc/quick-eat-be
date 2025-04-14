@@ -78,6 +78,7 @@ model orders {
     payment      Payment_Options @default(COD)
     total_price  Decimal
     orderedAt    DateTime        @default(now())
+    status       Order_Status    @default(PENDING)
 
     user_id String
     user    users  @relation(fields: [user_id], references: [id])
@@ -90,10 +91,9 @@ model orders {
 }
 
 model order_details {
-    id          String       @id @default(cuid())
+    id          String @id @default(cuid())
     quantity    Int
     total_price Int
-    status      Order_Status @default(PENDING)
 
     food_id String
     food    food   @relation(fields: [food_id], references: [id])

@@ -103,7 +103,7 @@ export const getOrder = async (req, res) => {
     };
 
     if (status && !food_name) {
-      whereCondition.order_details.some.status = status;
+      whereCondition.status = status;
     }
 
     if (!status && food_name) {
