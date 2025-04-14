@@ -92,14 +92,46 @@ export const createOrder = async (req, res) => {
 
 export const getOrder = async (req, res) => {
   const { id } = req;
+  const { status, food_name } = req.query;
 
   try {
+    let whereCondition = {
+      user_id: id,
+    };
+
+    if (status) {
+      whereCondition.order_details = {
+        some: {
+          status: status,
+        },
+      };
+    }
+
+    if (food_name) {
+      whereCondition.order_details = {
+        some: {
+          food: {
+            name: {
+              contains: food_name,
+              mode: "insensitive",
+            },
+          },
+        },
+      };
+    }
+
     const orders = await prisma.orders.findMany({
-      where: { user_id: id },
-      include: { order_details: true },
+      where: whereCondition,
+      include: {
+        order_details: {
+          include: {
+            food: true,
+          },
+        },
+      },
     });
 
-    if (orders) {
+    if (orders.length > 0) {
       return res.status(200).json({ success: true, message: orders });
     }
 
