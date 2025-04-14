@@ -129,6 +129,7 @@ export const getOrder = async (req, res) => {
           },
         },
       },
+      orderBy: { orderedAt: "desc" },
     });
 
     if (orders.length > 0) {
