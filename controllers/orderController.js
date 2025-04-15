@@ -116,15 +116,11 @@ export const getOrder = async (req, res) => {
     }
 
     if (status && food_name) {
-      whereCondition.order_details = {
-        some: {
-          status: status,
-          food: {
-            name: {
-              contains: food_name,
-              mode: "insensitive",
-            },
-          },
+      whereCondition.status = status;
+      whereCondition.order_details.some.food = {
+        name: {
+          contains: food_name,
+          mode: "insensitive",
         },
       };
     }

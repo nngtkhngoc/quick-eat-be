@@ -151,16 +151,6 @@ export const addReview = async (req, res) => {
   const { score, content } = req.body;
 
   try {
-    const checkReview = await prisma.reviews.findFirst({
-      where: { food_id, user_id },
-    });
-
-    if (checkReview) {
-      return res
-        .status(409)
-        .json({ success: false, message: "You have already reviewed" });
-    }
-
     const newReview = await prisma.reviews.create({
       data: {
         food_id,
