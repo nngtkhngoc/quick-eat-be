@@ -99,7 +99,8 @@ model order_details {
     food    food   @relation(fields: [food_id], references: [id])
 
     order_id String
-    order    orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
+    order    orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+    reviews  reviews?
 }
 
 enum Order_Status {
@@ -186,6 +187,9 @@ model reviews {
 
     food_id String
     food    food   @relation(fields: [food_id], references: [id])
+
+    order_details_id String        @unique
+    order_details    order_details @relation(fields: [order_details_id], references: [id])
 
     user_id String
     user    users  @relation(fields: [user_id], references: [id])

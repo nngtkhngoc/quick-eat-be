@@ -5,11 +5,9 @@ import {
   createFood,
   deleteFood,
   getReviews,
-  addReview,
 } from "../controllers/foodController.js";
 
 import express from "express";
-import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
@@ -20,6 +18,5 @@ router.post("/", createFood);
 router.post("/:id", deleteFood);
 
 router.get("/:id/reviews", getReviews);
-router.post("/:id/reviews", verifyToken, addReview);
 
 export default router;

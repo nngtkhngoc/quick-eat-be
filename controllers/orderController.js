@@ -153,3 +153,46 @@ export const getOrder = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
+
+export const addReview = async (req, res) => {
+  const user_id = req.id;
+  const order_details_id = req.params.id;
+  const { score, content } = req.body;
+
+  try {
+    const order_details = await prisma.order_details.findUnique({
+      where: { id: order_details_id },
+    });
+
+    const newReview = await prisma.reviews.create({
+      data: {
+        order_details_id,
+        food_id: order_details.food_id,
+        user_id,
+        score,
+        content,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    const avg_score = await prisma.reviews.aggregate({
+      where: { food_id: order_details.food_id },
+      _avg: { score: true },
+    });
+
+    const food = await prisma.food.update({
+      where: { id: order_details.food_id },
+      data: { avg_rate: avg_score._avg.score },
+    });
+
+    return res.status(200).json({ success: true, data: newReview, food: food });
+  } catch (error) {
+    console.log("Error adding review ", error, "id:", req.id);
+
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
