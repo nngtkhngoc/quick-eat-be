@@ -187,7 +187,14 @@ export const addReview = async (req, res) => {
       data: { avg_rate: avg_score._avg.score },
     });
 
-    return res.status(200).json({ success: true, data: newReview, food: food });
+    const order = await prisma.order_details.update({
+      where: { id: order_details_id },
+      data: { is_reviewed: true },
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, data: newReview, food: food, order: order });
   } catch (error) {
     console.log("Error adding review ", error, "id:", req.id);
 

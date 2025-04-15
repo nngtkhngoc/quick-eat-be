@@ -91,9 +91,10 @@ model orders {
 }
 
 model order_details {
-    id          String @id @default(cuid())
+    id          String  @id @default(cuid())
     quantity    Int
     total_price Int
+    is_reviewed Boolean @default(true)
 
     food_id String
     food    food   @relation(fields: [food_id], references: [id])
