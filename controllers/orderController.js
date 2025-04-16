@@ -47,12 +47,12 @@ export const createOrder = async (req, res) => {
         fullname,
         voucher_id: req.body.voucher_id || null,
         total_price: finalPrice,
+        status: "PENDING",
         order_details: {
           create: cart.cart_details.map((item) => ({
             food_id: item.food_id,
             quantity: item.quantity,
             total_price: item.total_price,
-            status: "PENDING",
           })),
         },
       },
