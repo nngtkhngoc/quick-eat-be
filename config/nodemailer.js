@@ -83,7 +83,7 @@ export const sendResetPasswordEmail = async (client, resetPasswordToken) => {
   <div>Hello,</div>
 
   <div>You recently requested to reset your password. Click 
-    <a href='http://localhost:5173/reset-password/${resetPasswordToken}'>here</a> 
+    <a href='https://quick-eat-one.vercel.app/reset-password/${resetPasswordToken}'>here</a> 
     to proceed.
   </div>
 
