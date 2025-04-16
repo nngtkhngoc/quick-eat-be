@@ -2,6 +2,7 @@ import { prisma } from "../config/db.js";
 import {
   signUpValidator,
   resetPasswordValidator,
+  updateUserValidator,
 } from "../validation/userValidation.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -139,7 +140,43 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => {};
+export const updateUser = async (req, res) => {
+  const data = req.body;
+  const { id } = req;
+  try {
+    await updateUserValidator.validateAsync(data);
+
+    // if (data.profile_pic) {
+    //   const uploadRes = await cloudinary.uploader.upload(data.profile_pic);
+    //   data.profile_pic = uploadRes.secure_url;
+    // }
+
+    const updatedUser = await prisma.users.update({ where: { id }, data });
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Update user successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    if (error.isJoi) {
+      return res.status(400).json({
+        success: false,
+        message: error.details.map((err) => err.message),
+      });
+    }
+    console.log("Error update user: ", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 export const getResetPasswordToken = async (req, res) => {
   const { email } = req.body;

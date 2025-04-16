@@ -77,3 +77,45 @@ export const resetPasswordValidator = Joi.object({
       "any.only": "Password is not match",
     }),
 });
+
+export const updateUserValidator = Joi.object({
+  username: Joi.string().alphanum().min(6).max(20).messages({
+    "string.empty": "Username must not be empty",
+    "string.min": "Username must be at least 6 characters",
+    "string.max": "Username must not be over 20 characters",
+  }),
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .pattern(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    )
+    .messages({
+      "string.empty": "Email must not be empty",
+      "string.email": "Email is unvalid",
+      "string.pattern.base": "Email is unvalid",
+    }),
+  phone_number: Joi.string()
+    .pattern(/^[0-9\s]+$/)
+    .min(8)
+    .max(12)
+    .messages({
+      "string.empty": "Phone number must not be empty",
+      "string.pattern.base": "Phone number is unvalid",
+      "string.min": "Phone number must be at least 8 characters",
+      "string.max": "Phone number must not be over 12 characters",
+    }),
+  fullname: Joi.string()
+    .pattern(/^[A-Za-zÀ-Ỹà-ỹ\s]+$/)
+    .min(6)
+    .max(255)
+    .allow("")
+    .messages({
+      "string.pattern.base": "Fullname is unvalid",
+      "string.min": "Fullname must be at least 6 characters",
+      "string.max": "Fullname must not be over 255 characters",
+    }),
+  profile_pic: Joi.string(),
+});
