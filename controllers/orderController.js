@@ -1,4 +1,5 @@
 import { prisma } from "../config/db.js";
+import { sendBill } from "../config/nodemailer.js";
 import { createOrderValidation } from "../validation/orderValidation.js";
 
 export const createOrder = async (req, res) => {
@@ -69,10 +70,13 @@ export const createOrder = async (req, res) => {
 
     order = await prisma.orders.findUnique({
       where: { id: order.id },
-      include: { order_details: true },
+      include: { order_details: { include: { food: true } } },
     });
 
     await prisma.carts.delete({ where: { id: cart.id } });
+
+    const client = await prisma.users.findUnique({ where: { id } });
+    await sendBill(client.email, order);
 
     return res.status(200).json({ success: true, data: order });
   } catch (error) {
@@ -90,7 +94,7 @@ export const createOrder = async (req, res) => {
   }
 };
 
-export const getOrder = async (req, res) => {
+export const getOrders = async (req, res) => {
   const { id } = req;
   const { status, food_name } = req.query;
 
