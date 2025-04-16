@@ -56,3 +56,24 @@ export const signUpValidator = Joi.object({
   profile_pic: Joi.string(),
   fullname: Joi.string(),
 });
+
+export const resetPasswordValidator = Joi.object({
+  new_password: Joi.string()
+    .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+    .min(6)
+    .max(20)
+    .messages({
+      "any.required": "Password is required",
+      "string.empty": "Password must not be empty",
+      "string.min": "Password must be at least 6 characters",
+      "string.max": "Password must not be over 20 characters",
+      "string.pattern.base": "Password is unvalid",
+    }),
+  confirm_new_password: Joi.string()
+    .required()
+    .valid(Joi.ref("new_password"))
+    .messages({
+      "any.required": "Confirm password is required",
+      "any.only": "Password is not match",
+    }),
+});

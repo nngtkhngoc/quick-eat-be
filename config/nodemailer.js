@@ -73,3 +73,38 @@ export const sendBill = async (client, order) => {
     }
   });
 };
+
+export const sendResetPasswordEmail = async (client, resetPasswordToken) => {
+  const mailContent = {
+    from: sender,
+    to: client,
+    subject: "Reset Password",
+    html: `
+  <div>Hello,</div>
+
+  <div>You recently requested to reset your password. Click 
+    <a href='http://localhost:5173/reset-password/${resetPasswordToken}'>here</a> 
+    to proceed.
+  </div>
+
+  <div>Enter this code on the password reset page to set up a new password. 
+    Please remember that this password reset link will expire in 10 minutes.
+  </div>
+
+  <div>If you did not request this, please ignore this email. Your password will remain unchanged.</div>
+
+  <br>
+
+  <div>Best Regards,</div>
+  <div><strong>QuickEat</strong></div>
+`,
+  };
+
+  transporter.sendMail(mailContent, (err, res) => {
+    if (err) {
+      console.log("Error sending mail:", err);
+    } else {
+      console.log("Mail sent");
+    }
+  });
+};
