@@ -7,6 +7,7 @@ import userRouter from "./userRouter.js";
 import cartRouter from "./cartRouter.js";
 import oAuthRouter from "./oAuthRouter.js";
 import orderRouter from "./orderRouter.js";
+import messageRouter from "./messageRouter.js";
 
 export const routes = (app) => {
   app.use("/api/food", foodRouter);
@@ -18,4 +19,5 @@ export const routes = (app) => {
   app.use("/api/cart", cartRouter);
   app.use("/api/oauth", oAuthRouter);
   app.use("/api/order", orderRouter);
+  app.use("/api/message", messageRouter);
 };

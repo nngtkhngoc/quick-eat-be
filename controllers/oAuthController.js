@@ -28,6 +28,7 @@ export const googleLogin = async (req, res) => {
           fullname: name,
           profile_pic: picture,
           password: hashedPassword,
+          phone_number: phone,
           email,
         },
       });
